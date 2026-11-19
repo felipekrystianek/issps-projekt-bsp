@@ -1,22 +1,16 @@
 % Buduje quad_P2.slx - model BSP z LAB5 + system sterowania z LAB6, parametry sekcji P2
 % Przelacznik 'regulator': 1 - stale RotorSpeed (badania dynamiki, zad. 1), 2 - uklad sterowania (zad. 2).
-% Parametry sa zmiennymi w Model Workspace, wiec .slx dziala sam, bez skryptow.
+% Parametry sa w plikach parametry_REF.m i parametry_P2.m (workspace MATLAB-a).
 here = fileparts(mfilename('fullpath')); cd(here);
 mdl = 'quad_P2';
 if bdIsLoaded(mdl), close_system(mdl, 0); end
 if exist([mdl '.slx'], 'file'), delete([mdl '.slx']); end
 new_system(mdl); load_system('aerolibrotordyn'); load_system('aerolib6dof2');
 
-%% Parametry w Model Workspace (konfiguracja P2, tab. 1-3 zadania projektowego)
-ws = get_param(mdl, 'ModelWorkspace');
-v = {'CT', 0.0142; 'CQ', 0.00206; 'H', -0.035; 'R', 0.127; 'd', 0.225; 'rho', 1.225; ...
-     'g', [0; 0; 9.81]; 'm', 1.65; 'I', diag([0.0114 0.0073 0.0083]); ...
-     'CDxS', [0.0390 0.0455 0.0900]; 'InitialPosition', [0 0 -10]; ...
-     'Wind', [0 0 0]; 'Gust', [0 0 0]; 't_gust', 20; 'Wmax', 1000; ...
-     'regulator', 1; 'RotorSpeed', sqrt(1.65*9.81/(4*0.0142*1.225*pi*0.127^4))*[1 -1 1 -1]; ...
-     'tryb', 1; 't_skok', 1; 'z_cel', 10; 'phi_cel', 0; 'theta_cel', 0; 'r_cel', 0; ...
-     'x_cel', 0; 'y_cel', 0; 'psi_cel', 0; 'v_xy', 0.5};
-for i = 1:size(v, 1), ws.assignin(v{i, 1}, v{i, 2}); end
+%% Parametry: bloki maja nazwy zmiennych, a wartosci sa w workspace (parametry_P2.m / parametry_REF.m)
+parametry_P2;
+% przy otwarciu modelu wczytuje sie P2, chyba ze w workspace jest juz jakas konfiguracja
+set_param(mdl, 'PreLoadFcn', 'if ~exist(''konfiguracja'', ''var''), parametry_P2; end');
 
 %% Model BSP (jak w LAB5, tylko z nazwami zmiennych zamiast liczb)
 dof = '6DOF (Quaternion)';

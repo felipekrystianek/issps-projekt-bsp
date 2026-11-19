@@ -1,15 +1,17 @@
 % Badania do projektu (sekcja P2): zad. 1 (dynamika) i zad. 2 (sterowanie) dla P2 i konfiguracji referencyjnej REF
 % Wykresy do ../docs/img, wyniki do ../docs/wyniki.json. Obie konfiguracje licza sie na tym samym modelu quad_P2.slx,
-% zmieniaja sie tylko m, I i CDxS (jak w zasadach projektu).
+% zmieniaja sie tylko m, I i CDxS (jak w parametry_REF.m i parametry_P2.m).
+function run_project
 here = fileparts(mfilename('fullpath')); cd(here);
 img = fullfile(here, '..', 'docs', 'img'); if ~exist(img, 'dir'), mkdir(img); end
 mdl = 'quad_P2';
 if ~exist([mdl '.slx'], 'file'), build_P2; end
+evalin('base', 'parametry_P2');   % model czyta parametry z workspace
 load_system(mdl);
 
-% konfiguracje (tab. 1 i 2 zadania projektowego)
-K.REF = struct('m', 1.50, 'I', diag([0.0111 0.0070 0.0080]), 'CDxS', [0.0390 0.0455 0.0900]);
-K.P2  = struct('m', 1.65, 'I', diag([0.0114 0.0073 0.0083]), 'CDxS', [0.0390 0.0455 0.0900]);
+% konfiguracje z plikow parametrow (tab. 1 i 2 zadania projektowego)
+parametry_REF; K.REF = struct('m', m, 'I', I, 'CDxS', CDxS);
+parametry_P2;  K.P2  = struct('m', m, 'I', I, 'CDxS', CDxS);   % w workspace zostaje P2
 nazwy = {'REF', 'P2'};
 g = 9.81; rho = 1.225; CT = 0.0142; R_rot = 0.127; dirs = [1 -1 1 -1];
 Om_min = @(m, rho_) sqrt(m*g/(4*CT*rho_*pi*R_rot^4));
@@ -173,13 +175,14 @@ fid = fopen(fullfile(here, '..', 'docs', 'wyniki.json'), 'w');
 fprintf(fid, '%s', jsonencode(R, 'PrettyPrint', true)); fclose(fid);
 disp(jsonencode(R, 'PrettyPrint', true));
 
+end
+
 %% Funkcje pomocnicze
 function o = symuluj(mdl, c, a, T)
-% ustawia konfiguracje (m, I, CDxS) i pozostale zmienne w Model Workspace, potem puszcza symulacje
+% ustawia konfiguracje (m, I, CDxS) i pozostale zmienne (na czas symulacji), potem puszcza symulacje
 in = Simulink.SimulationInput(mdl);
-in = in.setVariable('m', c.m, 'Workspace', mdl); in = in.setVariable('I', c.I, 'Workspace', mdl);
-in = in.setVariable('CDxS', c.CDxS, 'Workspace', mdl);
-for j = 1:2:numel(a), in = in.setVariable(a{j}, a{j + 1}, 'Workspace', mdl); end
+in = in.setVariable('m', c.m); in = in.setVariable('I', c.I); in = in.setVariable('CDxS', c.CDxS);
+for j = 1:2:numel(a), in = in.setVariable(a{j}, a{j + 1}); end
 o = sim(in.setModelParameter('StopTime', num2str(T)));
 end
 

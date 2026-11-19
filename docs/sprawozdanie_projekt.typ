@@ -119,7 +119,7 @@ page(margin: (left: 2cm, right: 2cm, top: 2.5cm, bottom: 2cm),
 
 Celem projektu jest zbadanie, jak parametry fizyczne czterowirnikowego BSP (masa, momenty bezwładności i opór aerodynamiczny) wpływają na jego dynamikę i na działanie systemu sterowania. Wykorzystano modele z ćwiczeń LAB5 (dynamika) i LAB6 (sterowanie), zmieniając w nich tylko parametry przypisane sekcji. Zakres badań odpowiada zadaniom z LAB5 (zadanie nr 1) i LAB6 (zadanie nr 2), a wyniki porównano z konfiguracją referencyjną (REF) z laboratoriów.
 
-Sekcji P2 przypisano BSP wyposażony w dodatkowy ładunek umieszczony blisko środka masy. Masa rośnie o 10 %, momenty bezwładności tylko o 2,7-4,3 % (ładunek jest blisko środka masy), a opór aerodynamiczny się nie zmienia (tab. 1).
+Sekcji P2 przypisano BSP wyposażony w dodatkowy ładunek o masie 0,15 kg umieszczony blisko środka masy, np. zamontowany pod kadłubem czujnik. Masa rośnie o 10 %, momenty bezwładności tylko o 2,7-4,3 % (ładunek jest blisko środka masy), a opór aerodynamiczny się nie zmienia (tab. 1).
 
 #figure(
   table(columns: 5,
@@ -135,7 +135,7 @@ Sekcji P2 przypisano BSP wyposażony w dodatkowy ładunek umieszczony blisko śr
 
 = 2. Opis modeli symulacyjnych
 
-Model BSP z LAB5 (bloki Multirotor DJIF450Rotors w konfiguracji _Quadcopter +_ i 6DOF (Quaternion), ciężar, opór bodyDrag, wiatr) i układ sterowania z LAB6 połączono w jednym pliku `quad_P2.slx` (rys. 1). Prędkości wirników wybiera przełącznik `regulator` (blok sterowanie): wartość 1 podaje stałe prędkości RotorSpeed, jak w LAB5 (zadanie nr 1), a wartość 2 podaje wyjście układu sterowania z LAB6 (zadanie nr 2). Struktura modelu i układu regulacji jest taka sama jak na laboratoriach. Wszystkie parametry są zmiennymi w Model Workspace, więc REF i P2 różnią się tylko wartościami $m$, $J$ i CDxS. Obie konfiguracje liczono na tym samym modelu, a wyniki dla REF są identyczne z otrzymanymi w LAB5 i LAB6.
+Model BSP z LAB5 (bloki Multirotor DJIF450Rotors w konfiguracji _Quadcopter +_ i 6DOF (Quaternion), ciężar, opór bodyDrag, wiatr) i układ sterowania z LAB6 połączono w jednym pliku `quad_P2.slx` (rys. 1). Prędkości wirników wybiera przełącznik `regulator` (blok sterowanie): wartość 1 podaje stałe prędkości RotorSpeed, jak w LAB5 (zadanie nr 1), a wartość 2 podaje wyjście układu sterowania z LAB6 (zadanie nr 2). Struktura modelu i układu regulacji jest taka sama jak na laboratoriach. Model jest sparametryzowany: w parametrach bloków zamiast liczb wpisano nazwy zmiennych (np. `m`, `I`, `CDxS`, `rho`, `RotorSpeed`), a ich wartości przypisują pliki `parametry_REF.m` i `parametry_P2.m` w workspace MATLAB-a. Plik `parametry_P2.m` wczytuje parametry referencyjne i podmienia tylko $m$, $J$ i CDxS, więc REF i P2 różnią się wyłącznie tymi wartościami. Przy otwarciu modelu automatycznie wczytują się parametry P2. Obie konfiguracje liczono na tym samym modelu, a wyniki dla REF są identyczne z otrzymanymi w LAB5 i LAB6.
 
 Układ sterowania (górna część rys. 1) składa się z regulatorów PID wysokości (PID1), kąta roll (PID2), kąta pitch (PID3) i prędkości obrotu yaw (PID4). Ich wyjścia mikser $bold(Omega)^2 = bold(A)^(-1) [Sigma T, tau_phi, tau_theta, tau_psi]^T$ zamienia na prędkości wirników. Ciąg zawisu $m g$ i macierz $bold(A)^(-1)$ liczone są z parametrów modelu, więc dla P2 regulator uwzględnia większą masę. Dolna część rys. 1 to pętle położenia $x$, $y$ i kąta yaw z zadania 2 ćwiczenia LAB6.
 
@@ -298,7 +298,7 @@ Przebiegi dla REF i P2 prawie się pokrywają. Regulator wysokości i mikser kor
 
 = 7. Wnioski
 
-+ Ładunek umieszczony blisko środka masy (P2) zwiększa masę o 10 %, a momenty bezwładności tylko o 2,7-4,3 %. Zmienia to dynamikę BSP w niewielkim stopniu, a opór aerodynamiczny pozostaje taki sam jak w REF.
++ Ładunek umieszczony blisko środka masy (P2, np. czujnik) zwiększa masę o 10 %, a momenty bezwładności tylko o 2,7-4,3 %. Zmienia to dynamikę BSP w niewielkim stopniu, a opór aerodynamiczny pozostaje taki sam jak w REF.
 + Prędkość wirników w zawisie rośnie jak $sqrt(m)$, czyli o #pr(A.z23.Om.at(0), B.z23.Om.at(0)), a przy $rho$ = 1,0 kg/m³ i dodatkowych 0,5 kg P2 potrzebuje już #f(B.z23.Om.at(1), 0) rad/s. Mniejszy jest więc zapas ciągu na manewry i ładunek.
 + Masa nie wpływa na swobodny spadek bez oporu ani na przyspieszenie przy $Omega = 1","2 Omega_"min"$, bo w obu przypadkach siły skalują się z masą. Z oporem cięższy BSP spada szybciej, a wiatr przesuwa go mniej (o #f(calc.abs((B.z26.x10 - A.z26.x10) / A.z26.x10 * 100), 1) %), bo ta sama siła oporu działa na większą masę.
 + Przy nierównomiernej pracy wirników P2 dostaje o 10 % większe momenty (większe $Omega$), a przyspieszenia kątowe rosną o 5-6 %, bo bezwładność wzrosła mniej niż masa.

@@ -5,13 +5,13 @@
 ## 1. Pokaz modelu krok po kroku
 
 1. W MATLAB-ie przejdź do `Projekt_BSP/src` i otwórz `quad_P2.slx`.
-2. **Modeling → Model Explorer → quad_P2 → Model Workspace**: tu są wszystkie parametry. Zmieniasz wartość i klikasz **Apply**.
+2. Przy otwarciu model sam uruchamia `parametry_P2.m`, więc w oknie **Workspace** pojawiają się wszystkie parametry. Wartość zmieniasz w Command Window (np. `m = 2.15`) albo dwuklikiem w oknie Workspace. Żeby wrócić do ustawień P2, wpisz `parametry_P2`, a do konfiguracji referencyjnej `parametry_REF`.
 3. Czas symulacji ustawiasz w polu **Stop Time**, a symulację uruchamiasz przyciskiem **Run**.
 4. Przebiegi pokazują Scope'y: z, phi, theta, r, psi, XY. Pozostałe sygnały (oznaczone anteną) są w **Data Inspector**: `Xe`, `Ve`, `eul`, `wb`, `Mrot`, `Frot`, `Omega`.
-5. Na koniec **nie zapisuj modelu** (*Don't save*).
+5. Model jest sparametryzowany: w blokach są nazwy zmiennych (dwuklik na bloku, np. 6DOF: *Initial mass* = `m`, *Inertia* = `I`), a liczby są w workspace. Dlatego porównanie REF i P2 to tylko podmiana kilku wartości.
 
 ### Parametry P2 (domyślne w modelu)
-m = 1,65 kg; J = diag(0,0114; 0,0073; 0,0083) kg·m²; CDxS = [0,0390 0,0455 0,0900] m².
+Dodatkowy ładunek 0,15 kg blisko środka masy, np. czujnik. m = 1,65 kg; J = diag(0,0114; 0,0073; 0,0083) kg·m²; CDxS = [0,0390 0,0455 0,0900] m².
 Konfiguracja REF: m = 1,5 kg; J = diag(0,0111; 0,0070; 0,0080) kg·m²; CDxS taki sam.
 
 ### Zadanie 1 - dynamika (`regulator = 1`)
@@ -20,14 +20,15 @@ Konfiguracja REF: m = 1,5 kg; J = diag(0,0111; 0,0070; 0,0080) kg·m²; CDxS tak
 |---|---|---|---|
 | 1.1 spadek bez oporu | `RotorSpeed = [0 0 0 0]`, `CDxS = [0 0 0]`, `InitialPosition = [0 0 -10]` / `-50` / `-100` | 10 | Scope z, chwila h = 0 |
 | 1.2 spadek z oporem | jak 1.1, `CDxS = [0.039 0.0455 0.09]` | 10 | Scope z |
-| 1.3 zawis m | `RotorSpeed = 533.52*[1 -1 1 -1]` | 20 | Scope z, stałe 10 m |
+| 1.3 zawis m | nic (to ustawienie domyślne P2) | 20 | Scope z, stałe 10 m |
 | 1.3 zawis m + 0,5 kg | `m = 2.15`, `RotorSpeed = 609.02*[1 -1 1 -1]` | 20 | Scope z |
 | 1.4 gęstość 1,0 | `rho = 1.0`, `RotorSpeed = 590.50*[1 -1 1 -1]` | 20 | Scope z |
 | 1.5 wznoszenie | `RotorSpeed = 640.23*[1 -1 1 -1]`, `CDxS = [0 0 0]` | 15 | Data Inspector `Ve` (3. składowa, ze znakiem minus) |
 | 1.6 wiatr | `RotorSpeed = 533.52*[1 -1 1 -1]`, `Wind = [3 0 0]` | 10 | Scope XY, krzywa x |
 | 1.7 wirnik +5 % | `RotorSpeed = [560.20 -533.52 533.52 -533.52]` | 0.3 | Data Inspector `Mrot` |
 
-Ω_min dla dowolnej masy: `sqrt(m*9.81/(4*0.0142*1.225*pi*0.127^4))`.
+Ω_min dla aktualnej masy policzysz w Command Window: `RotorSpeed = sqrt(m*g(3)/(4*CT*rho*pi*R^4))*[1 -1 1 -1]` (wtedy nie trzeba przepisywać liczb).
+Po każdym badaniu wpisz `parametry_P2`, żeby wrócić do ustawień domyślnych.
 
 ### Zadanie 2 - sterowanie (`regulator = 2`)
 
@@ -70,6 +71,12 @@ Wybiera, skąd biorą się prędkości wirników: 1 = stałe RotorSpeed (badania
 
 **Co zmieniono względem laboratoriów?**
 Tylko m, J i CDxS, zgodnie z zasadami projektu. Struktura modelu i nastawy regulatorów zostały takie same.
+
+**Co znaczy, że model jest sparametryzowany?**
+W parametrach bloków zamiast liczb są nazwy zmiennych, a wartości przypisuje plik w workspace (`parametry_REF.m`, `parametry_P2.m`). `parametry_P2.m` wczytuje REF i podmienia m, J i CDxS, więc łatwo przełączać konfiguracje i porównywać wyniki.
+
+**Jaki ładunek ma P2?**
+Ok. 0,15 kg (np. czujnik) zamontowany blisko środka masy. Dlatego masa rośnie o 10 %, a momenty bezwładności tylko o 3-4 %.
 
 **Skąd wiadomo, że model działa tak samo jak na laboratoriach?**
 Dla parametrów REF wyniki z tego modelu zgadzają się z LAB5 i LAB6 we wszystkich cyfrach.
