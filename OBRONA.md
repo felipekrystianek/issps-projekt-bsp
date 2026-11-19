@@ -137,7 +137,7 @@ Uchyby x i y idą do PID X i PID Y, wynik jest obracany o kąt ψ do układu BSP
 Przy skoku o 5 m człon I narastał przez cały przelot i dawał przeregulowanie 1-2 m. Z rampą 0,5 m/s uchyb jest cały czas mały.
 
 **Skąd nastawy PID X i PID Y?**
-Na wykładzie ich nie ma, więc dobraliśmy je w LAB6 przeszukaniem siatki wartości: najkrótszy czas ustalania przy przeregulowaniu poniżej 10 % i bez uchybu przy wietrze. P = 0,06, I = 0,01, D = 0,3. W projekcie są bez zmian.
+Z LAB6 (P = 0,06, I = 0,01, D = 0,3), w projekcie są bez zmian. Są małe, bo pętla położenia musi być wolniejsza od pętli roll. Człon I usuwa uchyb przy wietrze, człon D tłumi oscylacje.
 
 **Dlaczego oś y jest wolniejsza od x?**
 Y steruje pętla roll, która z nastawami z wykładu jest wolniejsza od pitch (P = 0,00042 wobec 0,0038).
