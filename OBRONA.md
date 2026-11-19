@@ -4,11 +4,16 @@
 
 ## 1. Pokaz modelu krok po kroku
 
-1. W MATLAB-ie przejdź do `Projekt_BSP/src` i otwórz `quad_P2.slx`.
-2. Przy otwarciu model sam uruchamia `parametry_P2.m`, więc w oknie **Workspace** pojawiają się wszystkie parametry. Wartość zmieniasz w Command Window (np. `m = 2.15`) albo dwuklikiem w oknie Workspace. Żeby wrócić do ustawień P2, wpisz `parametry_P2`, a do konfiguracji referencyjnej `parametry_REF`.
+1. W MATLAB-ie otwórz `Projekt_BSP/src/quad_P2.slx` (bieżący folder nie ma znaczenia).
+2. Model sam uruchamia `parametry_P2.m` przy otwarciu i przed każdym Run, jeśli w workspace nie ma parametrów projektu, więc w oknie **Workspace** pojawiają się wszystkie parametry. Wartość zmieniasz w Command Window (np. `m = 2.15`) albo dwuklikiem w oknie Workspace. Żeby wrócić do ustawień P2, wpisz `parametry_P2`, a do konfiguracji referencyjnej `parametry_REF`.
 3. Czas symulacji ustawiasz w polu **Stop Time**, a symulację uruchamiasz przyciskiem **Run**.
 4. Przebiegi pokazują Scope'y: z, phi, theta, r, psi, XY. Pozostałe sygnały (oznaczone anteną) są w **Data Inspector**: `Xe`, `Ve`, `eul`, `wb`, `Mrot`, `Frot`, `Omega`.
 5. Model jest sparametryzowany: w blokach są nazwy zmiennych (dwuklik na bloku, np. 6DOF: *Initial mass* = `m`, *Inertia* = `I`), a liczby są w workspace. Dlatego porównanie REF i P2 to tylko podmiana kilku wartości.
+6. Jeśli bloki świecą na czerwono (brak zmiennej), wpisz `parametry_P2` (w folderze `src`) i kliknij Run jeszcze raz. Po `clear` nic nie trzeba robić, model sam wczyta parametry przy Run.
+
+### Co oddajemy
+
+Sprawozdanie (`docs/ISSPS_Projekt_P2_Filipek_Michalik_Kozlowski_Augustowski_Bedziszewska.pdf` albo `.docx`), model `src/quad_P2.slx` i pliki z parametrami `src/parametry_REF.m` i `src/parametry_P2.m`.
 
 ### Parametry P2 (domyślne w modelu)
 Dodatkowy ładunek 0,15 kg blisko środka masy, np. czujnik. m = 1,65 kg; J = diag(0,0114; 0,0073; 0,0083) kg·m²; CDxS = [0,0390 0,0455 0,0900] m².
@@ -74,6 +79,9 @@ Tylko m, J i CDxS, zgodnie z zasadami projektu. Struktura modelu i nastawy regul
 
 **Co znaczy, że model jest sparametryzowany?**
 W parametrach bloków zamiast liczb są nazwy zmiennych, a wartości przypisuje plik w workspace (`parametry_REF.m`, `parametry_P2.m`). `parametry_P2.m` wczytuje REF i podmienia m, J i CDxS, więc łatwo przełączać konfiguracje i porównywać wyniki.
+
+**Skąd model bierze parametry po otwarciu?**
+Z callbacków modelu (Modeling → Model Settings → Model Properties → Callbacks): *PostLoadFcn* i *InitFcn* uruchamiają `parametry_P2.m`, jeśli w workspace nie ma parametrów projektu (zmienna `konfiguracja` to nie `'REF'` ani `'P2'`). Plik jest wskazany pełną ścieżką, więc działa z każdego folderu. Gdy wpiszesz `parametry_REF`, model zostawia REF i liczy dla niej.
 
 **Jaki ładunek ma P2?**
 Ok. 0,15 kg (np. czujnik) zamontowany blisko środka masy. Dlatego masa rośnie o 10 %, a momenty bezwładności tylko o 3-4 %.
