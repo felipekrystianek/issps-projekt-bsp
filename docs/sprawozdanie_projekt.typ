@@ -27,9 +27,9 @@
 #set text(font: "Times New Roman", size: 12pt, lang: "pl")
 #set par(justify: true, leading: 0.65em, spacing: 1.1em)
 #show heading: set text(weight: "bold")
-#show heading.where(level: 1): it => block(sticky: true, above: 1.4em, below: 0.8em, text(size: 13pt, it.body))
-#show heading.where(level: 2): it => block(sticky: true, above: 1.4em, below: 0.8em, underline(text(size: 12pt, it.body)))
-#show heading.where(level: 3): it => block(sticky: true, above: 1.2em, below: 0.6em, text(size: 12pt, it.body))
+#show heading.where(level: 1): it => context if target() == "html" { it } else { block(sticky: true, above: 1.4em, below: 0.8em, text(size: 13pt, it.body)) }
+#show heading.where(level: 2): it => context if target() == "html" { it } else { block(sticky: true, above: 1.4em, below: 0.8em, underline(text(size: 12pt, it.body))) }
+#show heading.where(level: 3): it => context if target() == "html" { it } else { block(sticky: true, above: 1.2em, below: 0.6em, text(size: 12pt, it.body)) }
 #set list(indent: 1.2em, body-indent: 0.5em)
 #set enum(indent: 1.2em)
 #show figure.caption: set text(size: 10pt)
@@ -41,7 +41,20 @@
 #show table: set text(size: 11pt)
 
 // ---------- Strona tytułowa ----------
-#page(margin: (left: 2cm, right: 2cm, top: 2.5cm, bottom: 2cm),
+#let tytul-html() = html.elem("div", attrs: ("data-custom-style": "Tytul"))[
+  #par[Politechnika Śląska, Wydział Mechaniczny Technologiczny, Katedra Podstaw Konstrukcji Maszyn]
+  #par[*Inżynieria systemów statków powietrznych - systemy sterowania*]
+  #par[Rok akademicki 2026/27]
+  #par[SPRAWOZDANIE Z PROJEKTU]
+  #par[Sekcja projektowa P2]
+  #par[Temat]
+  #par[Badanie wpływu parametrów fizycznych czterowirnikowego bezzałogowego statku powietrznego na jego dynamikę i działanie systemu sterowania]
+  #par[SEKCJA P2: Krystian Filipek, Paweł Michalik, Artur Augustowski]
+  #par[Data oddania: 03.12.2026]
+  #par[Prowadzący: dr hab. inż. Piotr Przystałka, prof. PŚ]
+]
+#context if target() == "html" { tytul-html() } else {
+page(margin: (left: 2cm, right: 2cm, top: 2.5cm, bottom: 2cm),
   footer: align(right, text(font: "Times New Roman", size: 12pt)[- 1 -]))[
   #set par(justify: false, leading: 0.4em, spacing: 0.5em)
   #set text(font: "Arial")
@@ -87,6 +100,7 @@
     },
   )
 ]
+}
 
 #let pr(a, b) = f(calc.abs((b - a) / a * 100), 1) + " %"   // ta sama zmiana bez znaku, do tekstu
 // czas ustalania: 19 s oznacza, że przebieg nie wszedł do pasma do końca symulacji (20 s, skok w 1 s)

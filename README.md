@@ -9,6 +9,8 @@ Model to połączenie modelu z [LAB5](https://github.com/felipekrystianek/issps-
 ```
 docs/
   ISSPS_Projekt_P2_...pdf   <- gotowe sprawozdanie
+  ISSPS_Projekt_P2_...docx     to samo sprawozdanie w wersji Word
+  make_docx.py              tworzy wersję Word: python3 make_docx.py <plik.typ> <wynik.docx>
   sprawozdanie_projekt.typ  źródło sprawozdania (Typst)
   wyniki.json               wyniki dla REF i P2, które wczytuje sprawozdanie
   img/                      wykresy (REF i P2 na wspólnych osiach) i zrzut modelu
