@@ -19,6 +19,7 @@ src/
   build_P2.m                skrypt, który od zera buduje quad_P2.slx
   run_project.m             wszystkie badania z zadań 1 i 2 dla REF i P2, wykresy i wyniki.json
   bodyDrag.m, xy_na_katy.m  kod bloków MATLAB Function
+OBRONA.md                   jak pokazać model na zajęciach, wyniki i typowe pytania z odpowiedziami
 ```
 
 ## Jak używać modelu
