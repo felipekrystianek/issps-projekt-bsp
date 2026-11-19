@@ -1,5 +1,5 @@
 // Sprawozdanie projektowe: ISSPS - wpływ parametrów fizycznych BSP (sekcja P2) na dynamikę i sterowanie
-// Kompilacja: typst compile sprawozdanie_projekt.typ ISSPS_Projekt_P2_Filipek_Michalik_Augustowski.pdf
+// Kompilacja: typst compile sprawozdanie_projekt.typ ISSPS_Projekt_P2_Filipek_Michalik_Kozlowski_Augustowski_Bedziszewska.pdf
 // Wszystkie liczby czytane z wyniki.json (generuje src/run_project.m)
 
 #let r = json("wyniki.json")
@@ -18,7 +18,7 @@
 #let bl(a, b) = { let e = calc.abs(blad(a, b)); if e < 0.001 { "< 0,001" } else { f(e, 3) } }
 
 // ---------- Styl (wg SZABLON_SPRAWOZDANIA.doc) ----------
-#set document(title: "Sprawozdanie - projekt", author: ("Krystian Filipek", "Paweł Michalik", "Artur Augustowski"))
+#set document(title: "Sprawozdanie - projekt", author: ("Krystian Filipek", "Paweł Michalik", "Wiktor Kozłowski", "Artur Augustowski", "Liwia Będziszewska"))
 #set page(
   paper: "a4",
   margin: (x: 2.5cm, top: 2.5cm, bottom: 2.5cm),
@@ -49,7 +49,7 @@
   #par[Sekcja projektowa P2]
   #par[Temat]
   #par[Badanie wpływu parametrów fizycznych czterowirnikowego bezzałogowego statku powietrznego na jego dynamikę i działanie systemu sterowania]
-  #par[SEKCJA P2: Krystian Filipek, Paweł Michalik, Artur Augustowski]
+  #par[SEKCJA P2: Krystian Filipek, Paweł Michalik, Wiktor Kozłowski, Artur Augustowski, Liwia Będziszewska]
   #par[Data oddania: 03.12.2026]
   #par[Prowadzący: dr hab. inż. Piotr Przystałka, prof. PŚ]
 ]
@@ -92,7 +92,7 @@ page(margin: (left: 2cm, right: 2cm, top: 2.5cm, bottom: 2cm),
       v(0.3em)
       text(size: 11pt)[Badanie wpływu parametrów fizycznych czterowirnikowego bezzałogowego statku powietrznego na jego dynamikę i działanie systemu sterowania]
       v(2.4em)
-      text(size: 11pt)[SEKCJA P2: Krystian Filipek, Paweł Michalik, Artur Augustowski]
+      text(size: 11pt)[SEKCJA P2: Krystian Filipek, Paweł Michalik, Wiktor Kozłowski, Artur Augustowski, Liwia Będziszewska]
       v(2em)
       text(size: 11pt)[Data oddania: 03.12.2026]
       v(0.8em)
