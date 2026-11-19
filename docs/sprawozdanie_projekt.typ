@@ -139,6 +139,15 @@ Model BSP z LAB5 (bloki Multirotor DJIF450Rotors w konfiguracji _Quadcopter +_ i
 
 Układ sterowania (górna część rys. 1) składa się z regulatorów PID wysokości (PID1), kąta roll (PID2), kąta pitch (PID3) i prędkości obrotu yaw (PID4). Ich wyjścia mikser $bold(Omega)^2 = bold(A)^(-1) [Sigma T, tau_phi, tau_theta, tau_psi]^T$ zamienia na prędkości wirników. Ciąg zawisu $m g$ i macierz $bold(A)^(-1)$ liczone są z parametrów modelu, więc dla P2 regulator uwzględnia większą masę. Dolna część rys. 1 to pętle położenia $x$, $y$ i kąta yaw z zadania 2 ćwiczenia LAB6.
 
+Model `quad_P2.slx` powstał z modelu `quad_control.slx` z ćwiczenia 6 (którego budowę krok po kroku opisano w sprawozdaniu z LAB6). Wprowadzono w nim następujące zmiany:
+
++ Dodano blok Constant RotorSpeed (wartość `RotorSpeed`, czyli stałe prędkości wirników jak w LAB5) i blok Constant regulator.
++ Dodano blok Multiport Switch sterowanie (2 wejścia danych) przed wejściem $Omega$ bloku DJIF450Rotors. Wejście sterujące podłączono do bloku regulator, pierwsze wejście danych do bloku RotorSpeed, a drugie do wyjścia bloku Gain [1 -1 1 -1] (kierunki obrotu) układu sterowania.
++ Włączono zapis (Signal Logging) sił i momentów z wyjść $F_(x y z)$ i $M_(x y z)$ bloku DJIF450Rotors, potrzebnych w zad. 1.7.
++ Utworzono pliki `parametry_REF.m` (parametry konfiguracji referencyjnej, jak w LAB5 i LAB6, oraz domyślne wartości zadane) i `parametry_P2.m` (uruchamia `parametry_REF.m` i podmienia `m`, `I`, `CDxS` oraz prędkość zawisu `RotorSpeed`). Model uruchamia `parametry_P2.m` sam przy otwarciu i przed symulacją (callbacki PostLoadFcn i InitFcn), jeśli w workspace nie ma parametrów projektu.
+
+Pozostałe bloki (model BSP, regulatory, mikser, wiatr, Scope'y) są takie same jak w LAB5 i LAB6.
+
 #figure(image("img/model.png", width: 100%), caption: [Model BSP z układem sterowania i przełącznikiem RotorSpeed/regulator (`quad_P2.slx`)])
 
 = 3. Parametry modeli
@@ -175,6 +184,21 @@ Pozostałe elementy układu sterowania są takie jak w LAB6: ograniczenie dodatk
 = 4. Wyniki zadania nr 1
 
 Badania wykonano jak w LAB5: przełącznik `regulator` = 1, w zmiennej RotorSpeed odpowiednie prędkości wirników, start z wysokości 10 m (w zad. 1.1 i 1.2 z 10, 50 i 100 m).
+
+#figure(
+  table(columns: (auto, 1fr, auto, auto),
+    table.header([Badanie], [Ustawione zmienne (P2)], [Czas symulacji], [Odczyt]),
+    [1.1 spadek bez oporu], [`RotorSpeed` = [0 0 0 0], `CDxS` = [0 0 0], `InitialPosition` = [0 0 -10] / [0 0 -50] / [0 0 -100]], [10 s], [Scope z (chwila $h$ = 0)],
+    [1.2 spadek z oporem], [jak 1.1, `CDxS` = [0,039 0,0455 0,09]], [10 s], [Scope z],
+    [1.3 zawis $m$], [`RotorSpeed` = 533,52·[1 -1 1 -1] (wartość domyślna)], [20 s], [Scope z],
+    [1.3 zawis $m$ + 0,5 kg], [`m` = 2,15, `RotorSpeed` = 609,02·[1 -1 1 -1]], [20 s], [Scope z],
+    [1.4 gęstość 1,0 kg/m³], [`rho` = 1,0, `RotorSpeed` = 590,50·[1 -1 1 -1]], [20 s], [Scope z],
+    [1.5 wznoszenie], [`RotorSpeed` = 640,23·[1 -1 1 -1], `CDxS` = [0 0 0]], [15 s], [sygnał `Ve`],
+    [1.6 wiatr], [`Wind` = [3 0 0]], [10 s], [Scope XY],
+    [1.7 wirnik +5 %], [`RotorSpeed` = [560,20 -533,52 533,52 -533,52]], [0,3 s], [sygnał `Mrot`],
+  ),
+  caption: [Ustawienia modelu w badaniach zadania 1 (`regulator` = 1; dla REF po uruchomieniu `parametry_REF.m` z prędkościami dla m = 1,5 kg)],
+)
 
 === 4.1. Swobodny spadek bez oporu i z oporem aerodynamicznym
 
@@ -251,6 +275,19 @@ Momenty w P2 są o 10 % większe, bo zawis wymaga większej prędkości wirnikó
 
 Badania wykonano jak w LAB6: przełącznik `regulator` = 2, nastawy z tab. 3. W warunkach idealnych zadano skoki wysokości z 10 do 15 m, kąta roll i pitch o $pi \/ 8$ oraz prędkości yaw o $pi \/ 12$ rad/s (każdy osobno, w chwili 1 s). Następnie zadano punkt docelowy (5, 5, 15) m z kątem $psi$ = 45° bez wiatru oraz przy wietrze 5 m/s wzdłuż osi $x$ z podmuchem +3 m/s w chwili 30-32 s.
 
+#figure(
+  table(columns: (auto, 1fr, auto),
+    table.header([Badanie], [Ustawione zmienne], [Czas symulacji]),
+    [skok wysokości], [`regulator` = 2, `tryb` = 1, `z_cel` = 15], [20 s],
+    [skok roll], [`regulator` = 2, `tryb` = 1, `phi_cel` = pi/8], [20 s],
+    [skok pitch], [`regulator` = 2, `tryb` = 1, `theta_cel` = pi/8], [20 s],
+    [skok prędkości yaw], [`regulator` = 2, `tryb` = 1, `r_cel` = pi/12], [20 s],
+    [lot do punktu], [`regulator` = 2, `tryb` = 3, `x_cel` = 5, `y_cel` = 5, `z_cel` = 15, `psi_cel` = pi/4], [50 s],
+    [lot do punktu z wiatrem], [jak wyżej oraz `Wind` = [5 0 0], `Gust` = [3 0 0], `t_gust` = 30], [50 s],
+  ),
+  caption: [Ustawienia modelu w badaniach zadania 2 (skok w chwili `t_skok` = 1 s, takie same dla REF i P2)],
+)
+
 #figure(image("img/z2_z.png", width: 75%), caption: [Skok wysokości - REF i P2])
 
 #figure(image("img/z2_phi.png", width: 75%), caption: [Skok kąta roll - REF i P2])
@@ -265,7 +302,7 @@ Badania wykonano jak w LAB6: przełącznik `regulator` = 2, nastawy z tab. 3. W 
 
 = 6. Porównanie wyników
 
-Porównanie dla zadania nr 1 zawierają tabele 4-7. Wskaźniki jakości regulacji z zadania nr 2 zestawiono w tab. 8 (czas ustalania liczony od chwili skoku; przy wietrze dla $x$ i $y$ do chwili podmuchu).
+Porównanie dla zadania nr 1 zawierają tabele 5-8. Wskaźniki jakości regulacji z zadania nr 2 zestawiono w tab. 10 (czas ustalania liczony od chwili skoku; przy wietrze dla $x$ i $y$ do chwili podmuchu).
 
 #figure(
   table(columns: 7,
